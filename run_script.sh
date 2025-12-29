@@ -1,3 +1,4 @@
+#change source / build / files location to suit own system
 docker run -it -v $HOME/build/freecad_source:/mnt/source\
     -v $HOME/build/freecad_build:/mnt/build\
     -v $HOME/freecad_files/:/home/user/files\
