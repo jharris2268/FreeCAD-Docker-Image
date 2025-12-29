@@ -1,7 +1,7 @@
-# Debian 10.13
-FROM debian:buster
+# Debian 13
+FROM debian:trixie
 LABEL name="FreeCAD Dev Image"
-LABEL version="0.2.0"
+LABEL version="1.0.0"
 
 SHELL ["/bin/bash", "-c"]
 
@@ -9,27 +9,33 @@ WORKDIR /tmp
 
 # Build tools, and misc supporting tools
 RUN apt update && \
-    apt install -y build-essential gfortran automake bison flex libtool git \
+    apt install -y build-essential gfortran automake bison flex libtool git lsb-release cmake\
     wget unzip doxygen
 
 RUN apt-get update && \
     apt-get install python3 python3-pip -y && \
     apt-get clean 
 
-RUN apt install -y cmake cmake-gui libboost-date-time-dev libboost-dev libboost-filesystem-dev \
-    libboost-graph-dev libboost-iostreams-dev libboost-program-options-dev libboost-python-dev \
-    libboost-regex-dev libboost-serialization-dev libboost-thread-dev libcoin-dev libeigen3-dev \
-    libgts-bin libgts-dev libkdtree++-dev libmedc-dev libocct-data-exchange-dev libocct-ocaf-dev \
-    libocct-visualization-dev libopencv-dev libproj-dev libpyside2-dev libqt5opengl5-dev \
-    libqt5svg5-dev qtwebengine5-dev libqt5x11extras5-dev libqt5xmlpatterns5-dev libshiboken2-dev \
-    libspnav-dev libvtk7-dev libx11-dev libxerces-c-dev libzipios++-dev occt-draw pyside2-tools \
-    python3-dev python3-matplotlib python3-packaging python3-pivy python3-ply \
-    python3-pyside2.qtcore python3-pyside2.qtgui python3-pyside2.qtsvg python3-pyside2.qtwidgets \
-    python3-pyside2.qtnetwork python3-pyside2.qtwebengine python3-pyside2.qtwebenginecore \
-    python3-pyside2.qtwebenginewidgets python3-pyside2.qtwebchannel python3-markdown python3-git \
-    python3-pyside2uic qtbase5-dev qttools5-dev swig
+RUN apt install -y libboost-dev libboost-date-time-dev libboost-filesystem-dev libboost-graph-dev\
+    libboost-iostreams-dev libboost-program-options-dev libboost-python-dev libboost-regex-dev\
+    libboost-serialization-dev libboost-thread-dev\
+    libcoin-dev libeigen3-dev libgts-bin libgts-dev libkdtree++-dev libmedc-dev libopencv-dev\
+    libproj-dev libvtk9-dev libx11-dev libxerces-c-dev libyaml-cpp-dev libzipios++-dev libpcl-dev\
+    pybind11-dev qt6-base-dev qt6-svg-dev qt6-tools-dev qt6-webengine-dev libpyside6-dev\
+    libshiboken6-dev pyside6-tools pyqt6-dev-tools python3-dev python3-lark python3-matplotlib\
+    python3-numpy python3-scipy cython3\
+    python3-packaging python3-pivy python3-ply python3-pyside6.qtcore python3-pyside6.qtgui\
+    python3-pyside6.qtnetwork python3-pyside6.qtsvg python3-pyside6.qtwebchannel\
+    python3-pyside6.qtwebenginecore python3-pyside6.qtwebenginequick\
+    python3-pyside6.qtwebenginewidgets python3-pyside6.qtwidgets \
+    libocct-data-exchange-dev libocct-draw-dev libocct-foundation-dev\
+    libocct-modeling-algorithms-dev libocct-modeling-data-dev libocct-ocaf-dev\
+    libocct-visualization-dev occt-draw
 
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+
+
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 # # Python v3.7.6
 # RUN apt install -y zlib1g-dev libffi-dev libssl-dev && \
@@ -319,7 +325,10 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 #     rm -rfv /tmp/*
 
 # Numpy v1.16.2 and Matplotlib v3.0.3
-RUN python -m pip install cython==0.29.14 && python -m pip install numpy==1.18.1 matplotlib==3.1.2
+#RUN python -m pip install cython==0.29.14 && python -m pip install numpy==1.18.1 matplotlib==3.1.2
+
+
+
 
 # # SPOOLES v2.2
 # RUN mkdir spooles && cd spooles && \
@@ -410,18 +419,24 @@ RUN python -m pip install cython==0.29.14 && python -m pip install numpy==1.18.1
 #     make -j $(nproc --ignore=2) install
 
 # Ply v3.11 and PyYAML v5.3.1
-RUN python -m pip install ply==3.11 PyYAML==5.3.1
+#RUN python -m pip install ply==3.11 PyYAML==5.3.1
 
 # Add the build script
 ADD add_files/freecad_build_script.sh /root/build_script.sh
 
 # Add enviroment varaible so CMake can find QT5
-ENV CMAKE_PREFIX_PATH=/usr/local/Qt-5
+ENV CMAKE_PREFIX_PATH=/usr/local/Qt-6
 
 # So Qt5 can find it's shared libaries
-RUN echo "/usr/local/Qt-5/lib" > /etc/ld.so.conf.d/qt5.conf && \
-    ldconfig
+#RUN echo "/usr/local/Qt-6/lib" > /etc/ld.so.conf.d/qt6.conf && \
+RUN ldconfig
 
-WORKDIR /root
+#WORKDIR /root
+
+RUN useradd -ms /bin/bash user
+
+#RUN cd /mnt/build
+#RUN make install
+
 
 # Note for later: May need -fPIC
